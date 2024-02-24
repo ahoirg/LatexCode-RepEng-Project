@@ -1,0 +1,159 @@
+
+\documentclass[sigconf, nonacm]{acmart}
+\usepackage{csvsimple}
+
+\begin{document}
+\title{RepEng Project:  Empirical Evaluation of JSON Schema Extraction from MongoDB Collections}
+
+%% The "author" command and its associated commands are used to define the authors and their affiliations.
+
+\author{Ali Haydar Özdağ}
+\orcid{0000-0001-5109-3700}
+\affiliation{%
+  \institution{University of Passau}
+  \city{Passau}
+  \country{Germany}
+}
+\email{oezdag01@ads.uni-passau.de}
+
+
+\maketitle
+
+\vspace{.3cm}
+\begingroup\small\noindent\raggedright\textbf{Artifact Availability:}\\
+The source code, data, and/or other artifacts have been made available at \url{https://github.com/ahoirg/ReproducibilityEngineering-JSONSchemaDiscovery}.
+\endgroup
+
+
+\section{Introduction}
+
+In the evolving landscape of data science, the efficient handling of schema-less data formats like JSON (JavaScript Object Notation) is pivotal. The approach detailed in 'An Approach for Schema Extraction of JSON and Extended JSON Document Collections' by Frozza et al.~\cite{SchemaExtraction} offers an innovative solution to this challenge.
+
+In this paper, this study empirically analyzes the validity of the hypotheses proposed by Frozza et al.~\cite{SchemaExtraction} regarding schema extraction from JSON and Extended JSON document collections. This will be possible by repeating two of the three experiments they conducted and comparing the results with their hypotheses.
+
+To facilitate replication of this study and to enable a deeper exploration of the methodology employed, a Dockerfile is made available. This ensures that the experimental environment I used can be easily accessed and reproduced by others who interested in the study.
+
+\section{HYPOTHESIS AND EXPERIMENTS}
+
+In their study, Frozza et al.~\cite{SchemaExtraction} considered three experiments to evaluate the quality of the generated schemas by JSON Schema Discovery~\cite{JSONSchemaDiscovery}.  Different collections of JSON documents stored in MongoDB were used on each of them.
+
+\subsection{Quality of JSON document mapping for JSON Schema}
+The hypothesis is presented that the approach successfully identifies documents of similar structure and type, even if the feature order changes, and works with 100\% accuracy.
+
+ In this experiment, they verify the correctness and completeness of the JSON → JSON Schema mappings. To do so, five JSON documents~\cite{JsonDataDocs} with several data types and heterogeneous structures were used, as shown in \autoref{tab:tab1}. This resulted in the identification of three distinct raw schemas with ordered structure, confirming the approach's effectiveness with 100\% accuracy.
+ 
+\begin{table}
+  \caption{INPUT JSON DOCUMENTS}
+  \label{tab:tab1}
+  \begin{tabular}{|c|p{6cm}|} 
+    \hline 
+    Document & Content \\
+    \hline 
+    Doc-1 & Base document with major JSON and JSON extended data types. \\
+    \hline 
+    Doc-2 & Doc-1 with changes in the data values. \\
+    \hline
+    Doc-3 & JSON document with values representing all Extended JSON data types, and an array containing items with different data types. \\
+    \hline
+    Doc-4 & Similar to Doc-3, but some attributes and items of the arrays were deleted. It was created to represent optional attributes. \\
+    \hline
+    Doc-5 & Similar to Doc-4, but the attributes are in different order. \\
+    \hline 
+  \end{tabular}
+\end{table}
+
+\subsection{Processing Time Evaluation}
+To evaluate the processing time of the approach, experiments with three datasets from Foursquare~\cite{su11030595} revealed that more than 99\% of the time was spent on document reading and raw schema generation, which was identified as the main bottleneck. This observation leads to the hypothesis that the approach's processing time does not increase proportionally with the number of JSON documents, indicating efficient scalability.
+
+\subsection{Comparison with Related Work}
+This experiment emphasizes that Json Schema Discovery~\cite{JSONSchemaDiscovery} reaches more json schema than Wang et al.'s~\cite{Wang2015SchemaManagement} approach, and puts forward the hypothesis that it is equivalent or superior to related studies. You can see the data~\cite{datasets} used and the results obtained with the Json Schema Discovery~\cite{JSONSchemaDiscovery} approach in \autoref{tab:tab2}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{COMPARISON WITH WANG ET AL.~\cite{Wang2015SchemaManagement} }
+  \label{tab:tab2}
+  \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    \multicolumn{2}{|c|}{\small Datasets} & \multicolumn{2}{c|}{\small JSON Schema Discovery} & \multicolumn{1}{c|}{ \small Wang et al.~\cite{Wang2015SchemaManagement}} \\ \hline
+    Collection & N\_JSON & RS & ROrd & FS \\ \hline
+    drugs & 3662 & 2818 & 2818 & 2818 \\ \hline
+    companies & 24367 & 21312 & 21312 & 21302 \\ \hline
+    movies & 30330 & 25140 & 25140 & 25137 \\ \hline
+  \end{tabular}
+    \smallskip % Adds a little space after the table
+  \textit{N\_JSON - Number of JSON documents. RS - Raw schemas. \\
+  ROrd - Raw schemas with ordered structure. FS - Final Schemas.}
+\end{table}
+
+\section{Success criteria}
+The experiments mentioned in sections 2.1 and 2.3 will be repeated and the accuracy of the hypotheses mentioned in these sections will be checked with the experimental results.
+
+To confirm the hypothesis detailed in section 2.1, the experiment to be repeated should yield 4 raw schemas and 3 raw schemas with ordered structure.
+
+To confirm  the hypothesis detailed in section 2.3, identical RS and RSOrd values should be observed across each collections for JSON Schema Discovery~\cite{JSONSchemaDiscovery}, as shown in \autoref{tab:tab2}.
+
+\section{Replicated Experiments}
+This research was conducted in a carefully designed experimental environment to validate the hypotheses introduced earlier. Emphasizing reproducibility and replicability, the setup was containerized using Docker, ensuring consistent conditions for this analysis and easing future replication or expansion efforts. The subsequent sections detail the experimental setup and results of the experiments.
+
+\subsection{Experimental Setup}
+
+This section outlines the experimental setup used for hypothesis testing. The experiments were conducted in a Docker container based on debian:bullseye-slim with LTS support, equipped with 5 GB of RAM and 3 CPUs, to ensure a stable and consistent environment. JSON schemas are extracted from the datasets stored in the MongoDB collections.
+
+\subsection{A Replication Experiment for JSON Schema Extraction Quality }
+For this experiment, Frozza et al.~\cite{SchemaExtraction} created 5 json files~\cite{JsonDataDocs} in which \autoref{tab:tab1} details can be seen. All of these files were imported into MongoDB under the "docs" collection in the Docker container. As in the original article~\cite{SchemaExtraction}, Json extract was applied to these files with the Json Schema Discovery~\cite{JSONSchemaDiscovery} application. 
+
+In \autoref{tab:tab3}, the "Replicated Experiment" column shows my results from repeating the experiment. As the original article~\cite{SchemaExtraction} stated, while Documents 1 and 2 had different values, their identical structure and data types meant they shared a raw schema. Documents 4 and 5, though structurally similar with different feature orderings, were classified together after sorting their schema features. Therefore, 4 row schemas and 3 raw schemas with ordered structure were obtained. This result confirms the hypothesis that the approach works with 100\% accuracy.
+
+\begin{table}[htbp]
+  \centering
+  \caption{COMPARISON RESULTS OF DOCS}
+  \label{tab:tab3}
+    \begin{tabular}{|l|p{1cm}|p{1cm}|p{1cm}|p{1cm}|}
+    \hline
+    \textbf{Collection} & \multicolumn{2}{c|}{\textbf{Replicated Experiment}} & \multicolumn{2}{c|}{\textbf{Frozza et al.}} \\ \cline{2-5} 
+    & \textbf{RS} & \textbf{ROrd} & \textbf{RS} & \textbf{ROrd} \\ \hline
+    docs & \csvreader[head to column names]{data/docs.csv}{}{ \csvcoli & \csvcolii } & 3 & 4 \\ \hline
+    \end{tabular}
+        \smallskip 
+    \textit{\\ RS - Raw schemas. ROrd - Raw schemas with ordered structure.}
+\end{table}
+
+However, there is still a threat to validity in this experiment: Since the 3 raw schemas after the order process are not shared in the original paper, I cannot compare the raw schemas I obtained in the experiment. At this point, it raises a question mark as to whether the Json Schema extraction process works with 100\% accuracy.
+
+\subsection{A Replication Of Comparison Experiment }
+As mentioned in section 2.3, Frozza et al.~\cite{SchemaExtraction} emphasize that Json Schema Discovery~\cite{JSONSchemaDiscovery} retrieves more json schemas than Wang et al.'s~\cite{Wang2015SchemaManagement} approach. This experiment is a replica of the json schema extraction process of collections in Table 2 with the Json Schema Discovery approach to verify the hypothesis in Section 2.3.
+
+As can be seen in \autoref{tab:tab4}, the raw schema and raw schema with ordered structures obtained for drugs, companies, movies are the same as the values obtained by Frozza et al.~\cite{SchemaExtraction}, as seen \autoref{tab:tab2}.
+
+\begin{table}[ht]
+  \centering
+  \caption{RESULTS OF DRUGS, COMPANIES, MOVIES}
+  \label{tab:tab4}
+  \begin{tabular}{|p{2cm}|p{2cm}|p{2cm}|p{1cm}|}
+    \hline
+    \textbf{Collection} & \textbf{N\_JSON} & \textbf{RS} & \textbf{ROrd} \\ \hline
+    drugs & \csvreader[head to column names]{data/drugs.csv}{}{\NJSON & \RS & \ROrd} \\ \hline
+    companies & \csvreader[head to column names]{data/companies.csv}{}{\NJSON & \RS & \ROrd} \\ \hline
+    movies & \csvreader[head to column names]{data/movies.csv}{}{\NJSON & \RS & \ROrd} \\ \hline
+  \end{tabular}
+        \smallskip 
+    \textit{\\ N\_JSON - Number of JSON documents. \\ RS - Raw schemas. ROrd - Raw schemas with ordered structure.}
+\end{table}
+
+Thus, the hypothesis that the Json Schema Discovery~\cite{JSONSchemaDiscovery} approach obtains more json schemas than the approach put forward by Wang et al.~\cite{Wang2015SchemaManagement} was confirmed again. But more than one study would need to be compared to confirm the hypothesis that the accuracy of the Json Schema Discovery approach is equivalent or superior to related studies. In their article, Frozza et al.~\cite{SchemaExtraction} state that they compared their approach with Baazizi et al.~\cite{Baazizi2017SchemaInference}'s approach and that both access the same number of json schemas. However, no detailed information was given about the experiment. At this point, a question mark arises for the accuracy of the hypothesis that the accuracy of the Json Schema Discovery~\cite{JSONSchemaDiscovery} approach is equivalent or superior to related studies.
+
+\section{Result}
+2 of the 3 experiments mentioned in the original article~\cite{SchemaExtraction} were meticulously repeated, adhering to the same parameters and data set configurations as the original study.
+
+The hypothesis from Section 2.1, stating the method accurately identifies similar documents regardless of feature order, was supported by the replicated experiment in Section 4.2. However, since all json schemas were not included in the paper, they could not be compared with the json schemas obtained. This adds doubt to the accuracy of the hypothesis, even though I have confirmed it.
+
+The hypothesis mentioned in Section 2.3 that Json Schema Discovery~\cite{JSONSchemaDiscovery} is equivalent or superior to related works is partially confirmed by the replicated experiment in Section 4.3. This hypothesis has been partially confirmed because it needs to be compared with other current approaches to verify the statement that it is "equivalent or superior to related studies". However, in the original article~\cite{SchemaExtraction}, the details of these experiments were not given and only these experiments were mentioned.
+
+%\clearpage
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{sample}
+
+
+\end{document}
+\endinput

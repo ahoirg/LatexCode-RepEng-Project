@@ -1,7 +1,7 @@
 report:
-	pdflatex main.tex
-	bibtex main
-	pdflatex main.tex
-	pdflatex main.tex
+	pdflatex paper.tex
+	bibtex paper
+	pdflatex paper.tex
+	pdflatex paper.tex
 clean:
-	rm -f main.aux main.bbl main.blg main.log main.out main.toc
+	rm -f paper.aux paper.bbl paper.blg paper.log paper.out paper.toc
